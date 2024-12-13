@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geofacetpy"
+version = "0.1.13"
+description = "Easily create geofaceted plots in matplotlib"
+readme = "README.md"
+authors = [{ name = "Bartłomiej Remlein", email = "bartlomiej@remlein.pl" }]
+license = { text = "MIT" }
+requires-python = ">=3.9"
+dependencies = ["matplotlib>=3.5", "pandas"]
+classifiers = [
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    'Topic :: Scientific/Engineering :: Visualization',
+]
+urls = { Homepage = "https://github.com/bartlomiejremlein/geofacetpy" }
+
+[tool.mypy]
+mypy_path = "src"
+check_untyped_defs = true
+disallow_any_generics = true
+ignore_missing_imports = true
+no_implicit_optional = true
+show_error_codes = true
+strict_equality = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+no_implicit_reexport = true
+
+[project.optional-dependencies]
+test = ["pytest>=7.0", "pytest-cov>=3.0", "tox", "mypy", "flake8"]
+
+[tool.flake8]
+max-line-length = 160
+exclude = [".git", "__pycache__", "build", "dist", ".venv"]
