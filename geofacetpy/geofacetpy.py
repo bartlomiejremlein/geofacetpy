@@ -163,7 +163,6 @@ class GeoFacetPlotter:
             self.plotting_function(
                 ax=ax, data=subset, group_name=entry["name"], **self.plot_kwargs
             )
-            ax.set_title(entry["name"])
 
         self._customize_ticks(axes)
         self._hide_empty_subplots(axes)
