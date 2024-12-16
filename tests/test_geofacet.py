@@ -1,87 +1,96 @@
 import pytest
 import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib
-from geofacetpy import (
-    GridLayoutValidator,
-    DataValidator,
-    GeoFacetPlotter,
-    preview_grid,
-    geofacet,
-)
-
-matplotlib.use("Agg")
+from matplotlib.figure import Figure
+from geofacetpy import geofacet, preview_grid
 
 
-# Sample test data for validation
+@pytest.fixture
 def sample_grid_layout():
-    return pd.DataFrame({"name": ["A", "B", "C"], "row": [0, 1, 2], "col": [0, 1, 0]})
+    return pd.DataFrame(
+        {
+            "name": ["A", "B", "C", "D"],
+            "row": [1, 1, 2, 2],
+            "col": [1, 2, 1, 2],
+        }
+    )
 
 
+@pytest.fixture
 def sample_data():
-    return pd.DataFrame({"group": ["A", "B", "C"], "value": [10, 20, 30]})
-
-
-def sample_plot_function(ax, data, group_name, **kwargs):
-    ax.bar(data.index, data["value"])
-    ax.set_title(group_name)
-
-
-def test_validate_columns():
-    valid_grid = sample_grid_layout()
-    GridLayoutValidator.validate_columns(valid_grid)
-
-    invalid_grid = pd.DataFrame({"row": [0, 1], "col": [0, 1]})
-    with pytest.raises(ValueError):
-        GridLayoutValidator.validate_columns(invalid_grid)
-
-
-def test_adjust_indexing():
-    grid = pd.DataFrame({"name": ["A", "B"], "row": [1, 2], "col": [1, 2]})
-    adjusted = GridLayoutValidator.adjust_indexing(grid)
-    assert (adjusted["row"] == [0, 1]).all()
-    assert (adjusted["col"] == [0, 1]).all()
-
-
-def test_validate_data():
-    data = sample_data()
-    DataValidator.validate_data(data, "group")
-
-    with pytest.raises(ValueError):
-        DataValidator.validate_data(data, "nonexistent")
-
-    with pytest.raises(ValueError):
-        DataValidator.validate_data(data, "group", ["missing_column"])
-
-
-def test_geofacet_plotter():
-    grid_layout = sample_grid_layout()
-    data = sample_data()
-
-    plotter = GeoFacetPlotter(
-        grid_layout=grid_layout,
-        data=data,
-        group_column="group",
-        plotting_function=sample_plot_function,
+    return pd.DataFrame(
+        {
+            "name": ["A", "B", "C", "D", "A", "B", "C", "D"],
+            "value": [10, 20, 30, 40, 15, 25, 35, 45],
+        }
     )
-    fig = plotter.plot()
-
-    assert isinstance(fig, plt.Figure)
 
 
-def test_geofacet():
-    grid_layout = sample_grid_layout()
-    data = sample_data()
+@pytest.fixture
+def sample_plotting_function():
+    def plot(ax, data, group_name):
+        ax.bar(data.index, data["value"], label=group_name)
+        ax.set_title(group_name)
 
-    fig = geofacet(
-        grid_layout=grid_layout,
-        data=data,
-        group_column="group",
-        plotting_function=sample_plot_function,
+    return plot
+
+
+def test_geofacet_valid_input(
+    sample_grid_layout, sample_data, sample_plotting_function
+):
+    fig, axes = geofacet(
+        grid_layout=sample_grid_layout,
+        data=sample_data,
+        group_column="name",
+        plotting_function=sample_plotting_function,
+        figsize=(8, 6),
+        sharex=True,
+        sharey=True,
     )
-    assert isinstance(fig, plt.Figure)
+    assert isinstance(fig, Figure)
+    assert len(fig.axes) > 0
 
 
-def test_preview_grid():
-    grid_layout = sample_grid_layout()
-    preview_grid(grid_layout, show=False)
+def test_geofacet_missing_columns(sample_data, sample_plotting_function):
+    invalid_grid_layout = pd.DataFrame(
+        {
+            "name": ["A", "B", "C", "D"],
+            "row": [1, 1, 2, 2],
+        }
+    )
+    with pytest.raises(ValueError, match="Grid layout is missing required columns"):
+        geofacet(
+            grid_layout=invalid_grid_layout,
+            data=sample_data,
+            group_column="name",
+            plotting_function=sample_plotting_function,
+        )
+
+
+def test_geofacet_missing_group_column(
+    sample_grid_layout, sample_data, sample_plotting_function
+):
+    invalid_data = sample_data.drop(columns=["name"])
+    with pytest.raises(ValueError, match="Column 'name' not found in the data"):
+        geofacet(
+            grid_layout=sample_grid_layout,
+            data=invalid_data,
+            group_column="name",
+            plotting_function=sample_plotting_function,
+        )
+
+
+def test_preview_grid_valid_input(sample_grid_layout):
+    """Test preview_grid runs without error for valid input."""
+    preview_grid(sample_grid_layout, show=False)
+
+
+def test_preview_grid_missing_columns():
+    """Test preview_grid raises ValueError for missing columns."""
+    invalid_grid_layout = pd.DataFrame(
+        {
+            "name": ["A", "B", "C", "D"],
+            "row": [1, 1, 2, 2],
+        }
+    )
+    with pytest.raises(ValueError, match="Grid layout is missing required columns"):
+        preview_grid(invalid_grid_layout, show=False)
