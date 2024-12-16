@@ -5,7 +5,7 @@ from typing import Callable, Optional, Dict
 
 def _validate_columns(grid_layout: pd.DataFrame) -> None:
     """
-    Validate that the grid layout contains the required columns.
+    Validates that the grid layout contains the required columns.
 
     Args:
         grid_layout (pd.DataFrame): Grid layout DataFrame to validate.

@@ -120,7 +120,7 @@ plt.show()
 
 ### Output Example
 
-![alt text](example1.png)
+![alt text](images/example1.png)
 
 ## Contributing
 
