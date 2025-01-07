@@ -60,7 +60,7 @@ def custom_plot(ax, data, group_name):
     ax.grid(True, linestyle="--", linewidth=0.5)
 
 # Create the geofaceted plot
-fig = geofacet(
+fig, axes = geofacet(
     grid_layout=grid,
     data=data,
     group_column="district",
@@ -75,7 +75,6 @@ fig = geofacet(
 fig.suptitle("Example Geofaceted Plot")
 fig.supxlabel("Year")
 fig.supylabel("Count")
-plt.tight_layout()
 plt.show()
 ```
 
@@ -99,13 +98,11 @@ def seaborn_plot(ax, data, group_name):
     ax.grid(True, linestyle="--", linewidth=0.5)
 
 # Create the geofaceted plot
-fig = geofacet(
+fig, axes = geofacet(
     grid_layout=grid,
     data=data,
     group_column="district",
     plotting_function=seaborn_plot,
-    col_x="year",
-    col_y="count",
     figure_size=(11, 9),
     grid_spacing=(0.5, 0.5),
     sharex=True,
@@ -116,7 +113,6 @@ fig = geofacet(
 fig.suptitle("Geofaceted Plot with Seaborn")
 fig.supxlabel("Year")
 fig.supylabel("Count")
-plt.tight_layout()
 plt.show()
 ```
 
