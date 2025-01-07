@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "geofacetpy"
-version = "0.1.15"
+version = "0.1.0"
 description = "Easily create geofaceted plots in matplotlib"
 readme = "README.md"
 authors = [{ name = "Bartłomiej Remlein", email = "bartlomiej@remlein.pl" }]
