@@ -112,8 +112,16 @@ def _hide_empty_subplots(axes):
     """
     for row_axes in axes:
         for ax in row_axes:
-            if not ax.lines and not ax.has_data():
-                ax.set_visible(False)
+            if not ax.lines and not ax.patches and not ax.has_data():
+                ax.set_xticks([])
+                ax.set_yticks([])
+                ax.spines["top"].set_visible(False)
+                ax.spines["right"].set_visible(False)
+                ax.spines["left"].set_visible(False)
+                ax.spines["bottom"].set_visible(False)
+                ax.set_title("")
+                ax.set_xlabel("")
+                ax.set_ylabel("")
 
 
 def geofacet(

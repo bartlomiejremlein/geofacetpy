@@ -2,10 +2,12 @@
 
 geofacetpy is a Python library built to simplify the creation of geofaceted plots using [matplotlib](https://matplotlib.org/). It allows to easily map data to a grid layout and visualize trends across different regions using matplotlib and seaborn.
 
+![image](images/us.png)
+
 This library was heavily inspired by the [R library geofacet](https://github.com/hafen/geofacet).
 
 ## Installation
-```bash
+```
 pip install geofacetpy
 ```
 
@@ -51,8 +53,8 @@ data = pd.read_csv("data_grouped.csv")
 grid = pd.read_csv("grid.csv")
 
 # Define a custom plotting function
-def custom_plot(ax, data, group_name, col_x, col_y):
-    ax.bar(data[col_x], data[col_y], color="blue")
+def custom_plot(ax, data, group_name):
+    ax.bar(data['col_x'], data['col_y'], color="blue")
     ax.set_title(group_name.replace(" ", "\n"), fontsize=8)
     ax.tick_params(axis="x", labelsize=8)
     ax.grid(True, linestyle="--", linewidth=0.5)
@@ -90,8 +92,8 @@ data = pd.read_csv("data_grouped.csv")
 grid = pd.read_csv("grid.csv")
 
 # Define a custom plotting function using Seaborn
-def seaborn_plot(ax, data, group_name, col_x, col_y):
-    sns.lineplot(ax=ax, data=data, x=col_x, y=col_y, marker="o")
+def seaborn_plot(ax, data, group_name):
+    sns.lineplot(ax=ax, data=data, x='col_x', y='col_y', marker="o")
     ax.set_title(group_name.replace(" ", "\n"), fontsize=8)
     ax.tick_params(axis="x", labelsize=8)
     ax.grid(True, linestyle="--", linewidth=0.5)
@@ -102,7 +104,7 @@ fig = geofacet(
     data=data,
     group_column="district",
     plotting_function=seaborn_plot,
-    col_x="submission_year",
+    col_x="year",
     col_y="count",
     figure_size=(11, 9),
     grid_spacing=(0.5, 0.5),
@@ -121,10 +123,11 @@ plt.show()
 ### Output Example
 
 ![alt text](images/example1.png)
+![alt text](images/europe.png)
 
 ## Contributing
 
-Feel free to open an issue for suggestions, report bugs, or submit a pull request to improve the library.&#x20;
+Feel free to open an issue for suggestions, report bugs, or submit a pull request to improve the library.
 
 ## License
 
