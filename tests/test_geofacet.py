@@ -16,6 +16,17 @@ def sample_grid_layout():
 
 
 @pytest.fixture
+def sample_grid_layout_custom():
+    return pd.DataFrame(
+        {
+            "row": [1, 1, 2, 2],
+            "col": [1, 2, 1, 2],
+            "label": ["A", "B", "C", "D"],
+        }
+    )
+
+
+@pytest.fixture
 def sample_data():
     return pd.DataFrame(
         {
@@ -50,6 +61,23 @@ def test_geofacet_valid_input(
     assert len(fig.axes) > 0
 
 
+def test_geofacet_custom_grid_col_valid_input(
+    sample_grid_layout_custom, sample_data, sample_plotting_function
+):
+    fig, axes = geofacet(
+        grid_layout=sample_grid_layout_custom,
+        data=sample_data,
+        group_column="name",
+        grid_col="label",
+        plotting_function=sample_plotting_function,
+        figsize=(8, 6),
+        sharex=True,
+        sharey=True,
+    )
+    assert isinstance(fig, Figure)
+    assert len(fig.axes) > 0
+
+
 def test_geofacet_missing_columns(sample_data, sample_plotting_function):
     invalid_grid_layout = pd.DataFrame(
         {
@@ -62,6 +90,7 @@ def test_geofacet_missing_columns(sample_data, sample_plotting_function):
             grid_layout=invalid_grid_layout,
             data=sample_data,
             group_column="name",
+            grid_col="label",
             plotting_function=sample_plotting_function,
         )
 
@@ -82,6 +111,11 @@ def test_geofacet_missing_group_column(
 def test_preview_grid_valid_input(sample_grid_layout):
     """Test preview_grid runs without error for valid input."""
     preview_grid(sample_grid_layout, show=False)
+
+
+def test_preview_grid_custom_valid_input(sample_grid_layout_custom):
+    """Test preview_grid runs without error for valid input."""
+    preview_grid(sample_grid_layout_custom, grid_col="label", show=False)
 
 
 def test_preview_grid_missing_columns():
