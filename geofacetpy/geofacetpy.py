@@ -103,7 +103,7 @@ def _customize_ticks(axes, grid_layout, tick_placement, sharex, sharey):
                         ax.tick_params(axis="x", bottom=False, labelbottom=False)
 
 
-def _hide_empty_subplots(axes):
+def _remove_empty_subplots(axes):
     """
     Hides subplots that do not contain any data.
 
@@ -113,15 +113,7 @@ def _hide_empty_subplots(axes):
     for row_axes in axes:
         for ax in row_axes:
             if not ax.lines and not ax.patches and not ax.has_data():
-                ax.set_xticks([])
-                ax.set_yticks([])
-                ax.spines["top"].set_visible(False)
-                ax.spines["right"].set_visible(False)
-                ax.spines["left"].set_visible(False)
-                ax.spines["bottom"].set_visible(False)
-                ax.set_title("")
-                ax.set_xlabel("")
-                ax.set_ylabel("")
+                ax.remove()
 
 
 def geofacet(
@@ -176,7 +168,7 @@ def geofacet(
         plotting_function(ax=ax, data=subset, group_name=entry["name"])
 
     _customize_ticks(axes, grid_layout, tick_placement, sharex, sharey)
-    _hide_empty_subplots(axes)
+    _remove_empty_subplots(axes)
     return fig, axes
 
 
