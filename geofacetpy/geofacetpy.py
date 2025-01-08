@@ -3,17 +3,18 @@ import pandas as pd
 from typing import Callable, Optional, Dict
 
 
-def _validate_columns(grid_layout: pd.DataFrame) -> None:
+def _validate_columns(grid_layout: pd.DataFrame, grid_col: str) -> None:
     """
     Validates that the grid layout contains the required columns.
 
     Args:
         grid_layout (pd.DataFrame): Grid layout DataFrame to validate.
+        grid_col (str): Column name with label. Defaults to "name".
 
     Raises:
         ValueError: If required columns are missing.
     """
-    required_columns = {"name", "row", "col"}
+    required_columns = {grid_col, "row", "col"}
     missing = required_columns - set(grid_layout.columns)
     if missing:
         raise ValueError(f"Grid layout is missing required columns: {missing}")
@@ -49,7 +50,7 @@ def _validate_data(data: pd.DataFrame, group_column: str = None) -> None:
     """
     if group_column not in data.columns:
         raise ValueError(
-            f"Column '{group_column}' not found in the data. "
+            f"Column '{group_column}' not found in the data."
             f"Available columns: {list(data.columns)}"
         )
 
@@ -121,6 +122,7 @@ def geofacet(
     data: pd.DataFrame,
     group_column: str,
     plotting_function: Callable,
+    grid_col: str = "name",
     figsize=(12, 8),
     grid_spacing=(0.5, 0.5),
     tick_placement: Optional[Dict[str, str]] = {"x": "bottom", "y": "left"},
@@ -135,6 +137,7 @@ def geofacet(
         data (pd.DataFrame): Data to plot.
         group_column (str): Column matching grid layout names.
         plotting_function (Callable): Function to plot individual grid cells.
+        grid_col (str): Column name in grid layout to be used to filter data. Defaults to "name"
         figsize (tuple, optional): Overall figure size. Defaults to (12, 8).
         grid_spacing (tuple, optional): Spacing between grid rows/columns. Defaults to (0.5, 0.5).
         tick_placement (dict, optional): Controls tick placement Default to {"x": "bottom", "y": "left"}.
@@ -145,7 +148,7 @@ def geofacet(
         plt.Figure: Geofaceted plot figure.
         axes (ndarray): Array of matplotlib Axes objects.
     """
-    _validate_columns(grid_layout)
+    _validate_columns(grid_layout, grid_col)
     grid_layout = _adjust_indexing(grid_layout)
     _validate_data(data, group_column)
 
@@ -164,23 +167,24 @@ def geofacet(
     for _, entry in grid_layout.iterrows():
         row, col = entry["row"], entry["col"]
         ax = axes[row, col]
-        subset = data[data[group_column] == entry["name"]]
-        plotting_function(ax=ax, data=subset, group_name=entry["name"])
+        subset = data[data[group_column] == entry[grid_col]]
+        plotting_function(ax=ax, data=subset, group_name=entry[grid_col])
 
     _customize_ticks(axes, grid_layout, tick_placement, sharex, sharey)
     _remove_empty_subplots(axes)
     return fig, axes
 
 
-def preview_grid(grid_layout: pd.DataFrame, show: bool = True):
+def preview_grid(grid_layout: pd.DataFrame, grid_col: str = "name", show: bool = True):
     """
     Preview grid layout for visualization and debugging.
 
     Args:
-        grid_layout (pd.DataFrame): Grid layout with 'name', 'row', 'col' columns.
+        grid_layout (pd.DataFrame): Grid layout with 'row', 'col' and label columns.
+        grid_col (str): Column name to be used as a label. Defaults to name.
         show (bool): Whether to display the preview. Defaults to True.
     """
-    _validate_columns(grid_layout)
+    _validate_columns(grid_layout, grid_col)
     grid_layout = _adjust_indexing(grid_layout)
 
     max_row = grid_layout["row"].max() + 1
@@ -192,7 +196,7 @@ def preview_grid(grid_layout: pd.DataFrame, show: bool = True):
         ax.text(
             row["col"],
             row["row"],
-            row["name"],
+            row[grid_col],
             ha="center",
             va="center",
             fontsize=10,
